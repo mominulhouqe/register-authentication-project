@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, sendEmailVerification } from "firebase/auth";
 import app from "../firebase/firebase-auth";
+import { Link } from "react-router-dom";
 
 const auth = getAuth(app);
 
@@ -36,6 +37,10 @@ const Register = () => {
       setError('At least one string')
       return;
     }
+    else if(password.length < 6){
+      setError('Password must be 6 characters long');
+      return;
+    }
 
 
     console.log(email, password);
@@ -46,6 +51,7 @@ const Register = () => {
       console.log(user);
       event.target.reset();
       setSuccess('User has Created Succesfully')
+      emailVarifiaction(user)
     })
     .catch(error =>{
       console.error(error.message);
@@ -53,6 +59,14 @@ const Register = () => {
       
     })
   };
+
+  const emailVarifiaction = (user)=>{
+    sendEmailVerification(user)
+    .then(result =>{
+      alert('Please verify your Email address !!');
+      
+    })
+  }
 
   const handlePass = (event) => {
     // console.log(event.target.value);
@@ -68,6 +82,13 @@ const Register = () => {
       <h5 className="mb-5">Please Register </h5>
 
       <form onSubmit={handleSubmit}>
+        <input className="mb-3 p-3 border"
+           
+          type="name"
+          name="name"
+          id="" required
+          placeholder="Your name"
+        /> <br />
         <input className="mb-3 p-3 border"
            onChange={handleEmailChange}
           type="email"
@@ -86,6 +107,7 @@ const Register = () => {
         <br />
         <input className="mb-3 btn btn-primary" type="submit"  value="register" />
       </form>
+      <p><small>Already have an account? Please <Link className="text-primary fw-bold " to='/login'>Login</Link></small></p>
         <p className="text-danger text-center">{error}</p>
         <p className="text-success">{success}</p>
     </div>
